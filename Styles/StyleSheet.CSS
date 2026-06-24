@@ -1,0 +1,51 @@
+/* CSS: dot prefix */
+.resume-list-heading {
+  font-weight: bold;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  margin: 20px;
+  color: #333;
+  background: linear-gradient(135deg, #ffe0f0 0%, #ffd4e8 100%);
+  padding: 20px;
+  text-align: center;
+}
+
+h1,
+h2 {
+  color: #ff6b9d;
+}
+
+ul,
+ol {
+  display: inline-block;
+  text-align: left;
+}
+
+li {
+  margin: 10px 0;
+  list-style: none;
+}
+
+ul > li:before {
+  content: "+";
+  margin-right: 8px;
+}
+
+ul ul li:before {
+  content: "-";
+  margin-right: 8px;
+}
+
+ol li {
+  list-style: decimal;
+  margin-left: 20px;
+}
+
+ol li:before {
+  content: "";
+  margin-right: 0;
+}

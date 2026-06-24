@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sarah Galovan | Marketing Resume</title>
+  <style>
+    :root {
+      --bg: #fdf7fb;
+      --surface: #ffffff;
+      --accent: #d9467b;
+      --accent-soft: #ffe4ee;
+      --text: #111827;
+      --muted: #6b7280;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #fffafc 0%, #f8eef5 100%);
+      color: var(--text);
+    }
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+      background: var(--surface);
+      border-radius: 32px;
+      padding: 36px;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08);
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 3vw, 3.4rem);
+      line-height: 1.03;
+    }
+    .hero p {
+      margin: 20px 0 0;
+      max-width: 680px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+    .contact {
+      display: grid;
+      gap: 10px;
+      justify-self: end;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .contact a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .contact a:hover {
+      text-decoration: underline;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      margin-top: 34px;
+    }
+    .panel {
+      background: var(--surface);
+      border-radius: 28px;
+      padding: 34px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+    }
+    .panel + .panel {
+      margin-top: 18px;
+    }
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      color: #111827;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    .meta span {
+      min-width: 150px;
+    }
+    ul {
+      margin: 10px 0 0 20px;
+      padding: 0;
+      list-style: none;
+    }
+    li {
+      position: relative;
+      margin-bottom: 12px;
+      padding-left: 20px;
+      line-height: 1.75;
+    }
+    li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 1.2rem;
+      top: 0;
+      line-height: 1.5;
+    }
+    .badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    @media (max-width: 960px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: left;
+      }
+      .contact {
+        justify-self: start;
+        text-align: left;
+      }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      .page {
+        padding: 24px 16px 32px;
+      }
+      .hero,
+      .panel {
+        padding: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <h1>Sarah Galovan</h1>
+        <p>Pre-Business student at Brigham Young University with marketing internship experience, content strategy success, and strong leadership in service and student government.</p>
+      </div>
+      <div class="contact">
+        <div><strong>Provo, UT</strong></div>
+        <div>(916) 260-3365 | <a href="mailto:Sarahgalovan@gmail.com">Sarahgalovan@gmail.com</a> | <a href="https://www.linkedin.com/in/sarahgalovan/" target="_blank" rel="noreferrer">linkedin.com/in/sarahgalovan</a></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <p class="section-title">Education</p>
+        <h3>Brigham Young University — Pre-Business</h3>
+        <div class="meta">
+          <span>Bachelor of Science in Pre-Business</span>
+          <span>Sep 2024 — Apr 2028</span>
+        </div>
+        <div class="meta">
+          <span>Provo, UT</span>
+          <span>GPA 3.62 / 4.00</span>
+        </div>
+        <ul>
+          <li>Active Marketing Association member</li>
+          <li>Business Fundamentals in Europe study abroad program</li>
+          <li>Osage Nation Higher Education Academic Scholarship recipient</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <p class="section-title">Skills & Interests</p>
+        <ul>
+          <li><strong>Skills:</strong> Microsoft Excel, Adobe Suite, Canva, social media strategy, content creation, SEO, customer service</li>
+          <li><strong>Awards:</strong> Osage Nation Higher Education Academic Scholarship</li>
+          <li><strong>Interests:</strong> Self-proclaimed 5-star baker with sourdough, birthday cakes, and macarons. Passionate about travel and adapting to different cultures.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="panel" style="margin-top: 28px;">
+      <p class="section-title">Experience</p>
+      <h3>Salt Lake Bride</h3>
+      <div class="meta">
+        <span>Marketing Intern (On-Campus Internship)</span>
+        <span>Jan 2026 — May 2026</span>
+      </div>
+      <ul>
+        <li>Boosted engagement by 999% and generated 180,000+ views after executing a social media content strategy.</li>
+        <li>Tracked and analyzed website and social media performance metrics to guide data-driven marketing decisions.</li>
+        <li>Published 10+ SEO-optimized blog articles targeting high-intent keywords within the Utah wedding market.</li>
+      </ul>
+
+      <h3>Angel M. Ranch</h3>
+      <div class="meta">
+        <span>Social Media Marketing Intern</span>
+        <span>Sep 2025 — May 2026</span>
+      </div>
+      <ul>
+        <li>Grew Instagram community by 12%, gaining 5,000+ followers through audience relationship building.</li>
+        <li>Directed visual brand storytelling aligned with nonprofit mission and consumer values.</li>
+        <li>Ran content production process including concept development, filming, editing, and publishing.</li>
+      </ul>
+
+      <h3>Independent Swim Lessons Business</h3>
+      <div class="meta">
+        <span>Founder & Director</span>
+        <span>May 2018 — Sep 2025</span>
+      </div>
+      <ul>
+        <li>Instructed 120+ students and built a repeat customer base.</li>
+        <li>Founded and scaled a swim instruction business while developing an authentic marketing strategy.</li>
+        <li>Utilized community outreach and referral incentives to grow customer base.</li>
+        <li>Managed a team of instructors, established pricing strategy, and oversaw operations.</li>
+      </ul>
+
+      <h3>Dos Coyotes Border Cafe</h3>
+      <div class="meta">
+        <span>Hostess</span>
+        <span>Apr 2025 — Sep 2025</span>
+      </div>
+      <ul>
+        <li>Delivered high-quality customer service to 100+ customers per day in a chaotic environment.</li>
+        <li>Improved service flow by observing behavior patterns and anticipating customer needs.</li>
+        <li>Collaborated with a team to deliver consistent service and support operations.</li>
+      </ul>
+    </section>
+
+    <section class="panel" style="margin-top: 28px;">
+      <p class="section-title">Leadership & Service</p>
+      <h3>Marketing Association Director</h3>
+      <div class="meta">
+        <span>Director</span>
+        <span>Sep 2024 — Present</span>
+      </div>
+      <ul>
+        <li>Led marketing initiatives and helped plan events for the Marketing Association.</li>
+        <li>Collaborated with members and leadership to strengthen club engagement and outreach.</li>
+        <li>Supported professional development and community-building opportunities for students.</li>
+      </ul>
+
+      <h3>Humanitarian Experience Program (HXP)</h3>
+      <div class="meta">
+        <span>Project Volunteer</span>
+        <span>Jun 2024 & Jul 2025</span>
+      </div>
+      <ul>
+        <li>Assisted over 50 refugees through service initiatives focused on teaching English.</li>
+        <li>Delivered 80+ hours over 2.5 weeks to construct a home for a family in need.</li>
+      </ul>
+
+      <h3>Student Government Representative</h3>
+      <div class="meta">
+        <span>Public Relations Commissioner</span>
+        <span>Aug 2020 — May 2024</span>
+      </div>
+      <ul>
+        <li>Won elections for four consecutive years through personal branding and creative campaigns.</li>
+        <li>Curated promotional materials for school social media accounts to strengthen event turnout.</li>
+        <li>Directed student and parent committees to plan and execute large-scale events.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
+
