@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flower Fall Deluxe</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255, 214, 231, 0.9), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(216, 196, 255, 0.8), transparent 28%),
+        linear-gradient(135deg, #fff7fb, #eaf8ff);
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .game-wrap {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 24px;
+    }
+
+    .board-wrap {
+      position: relative;
+    }
+
+    canvas {
+      background: rgba(255, 255, 255, 0.84);
+      border: 4px solid #f4a7c6;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.13);
+    }
+
+    .panel {
+      width: 245px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 2px solid #ffd3e5;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.09);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      color: #d64f88;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      margin: 11px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ffe0ed;
+      font-size: 16px;
+    }
+
+    .next-title {
+      margin: 18px 0 8px;
+      font-weight: 700;
+      color: #9b3f68;
+    }
+
+    #next {
+      width: 130px;
+      height: 130px;
+      display: block;
+      margin: 0 auto;
+      border-width: 2px;
+      border-color: #ffd3e5;
+      border-radius: 14px;
+      background: #fffafd;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #d64f88;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:hover { background: #bd3f76; }
+
+    .controls {
+      margin-top: 17px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .message {
+      margin-top: 14px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fff4c7;
+      font-size: 14px;
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      body { align-items: flex-start; }
+
+      .game-wrap {
+        flex-direction: column;
+        align-items: center;
+        padding: 12px;
+      }
+
+      .panel { width: 320px; max-width: 92vw; }
+      canvas { max-width: 92vw; height: auto; }
+    }
+  
+    .gangnam-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+      opacity: 0.18;
+    }
+
+    .dancer {
+      position: absolute;
+      font-size: 42px;
+      animation: floatDance linear infinite;
+    }
+
+    @keyframes floatDance {
+      from {
+        transform: translateY(110vh) rotate(0deg);
+      }
+      to {
+        transform: translateY(-20vh) rotate(360deg);
+      }
+    }
+
+</style>
+</head>
+<body>
+
+<div class="gangnam-bg" id="gangnamBg"></div>
+
+  <div class="game-wrap">
+    <div class="board-wrap">
+      <canvas id="board" width="320" height="640"></canvas>
+    </div>
+
+    <aside class="panel">
+      <h1>Flower Fall</h1>
+      <div style='font-size:12px;color:#d64f88;margin-bottom:8px;'>🎵 Use the music button after opening the game</div>
+      <p class="subtitle">
+        Stack colorful flower clusters, clear full rows, and keep your garden from overflowing.
+      </p>
+
+      <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+      <div class="stat"><span>Lines</span><strong id="lines">0</strong></div>
+      <div class="stat"><span>Level</span><strong id="level">1</strong></div>
+
+      <div class="next-title">Next bouquet</div>
+      <canvas id="next" width="130" height="130"></canvas>
+
+      <button id="startBtn">Start / Restart</button>
+      <button id="musicBtn">Play Music 🎵</button>
+
+      <div class="controls">
+        <strong>Controls</strong><br>
+        ← / → Move<br>
+        ↓ Drop faster<br>
+        ↑ Rotate<br>
+        Space Hard drop<br>
+        P Pause
+      </div>
+
+      <div class="message" id="message"></div>
+    </aside>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+
+    const nextCanvas = document.getElementById("next");
+    const nextCtx = nextCanvas.getContext("2d");
+
+    const COLS = 10;
+    const ROWS = 20;
+    const CELL = 32;
+
+    const scoreEl = document.getElementById("score");
+    const linesEl = document.getElementById("lines");
+    const levelEl = document.getElementById("level");
+    const msgEl = document.getElementById("message");
+    const startBtn = document.getElementById("startBtn");
+    const musicBtn = document.getElementById("musicBtn");
+
+    const FLOWER_STYLES = [
+      { emoji: "🌸", bg: "#ffd6e7", shadow: "#f5a8c8" },
+      { emoji: "🌼", bg: "#fff3a8", shadow: "#ead86a" },
+      { emoji: "🌷", bg: "#ffc9de", shadow: "#f08db3" },
+      { emoji: "🌻", bg: "#ffe08a", shadow: "#e5b54c" },
+      { emoji: "🌺", bg: "#ffb7c5", shadow: "#e47c91" },
+      { emoji: "🪻", bg: "#d8c4ff", shadow: "#a991e5" }
+    ];
+
+    const SHAPES = [
+      [[1, 1, 1, 1]],
+      [[1, 1], [1, 1]],
+      [[0, 1, 0], [1, 1, 1]],
+      [[1, 0, 0], [1, 1, 1]],
+      [[0, 0, 1], [1, 1, 1]],
+      [[1, 1, 0], [0, 1, 1]],
+      [[0, 1, 1], [1, 1, 0]]
+    ];
+
+    let board, piece, nextPiece;
+    let score, lines, level;
+    let dropCounter, dropInterval, lastTime;
+    let paused, gameOver, animationId;
+    let petals = [];
+    let celebrationText = [];
+    let celebrationTimer = 0;
+    let lastCelebrationMilestone = -1;
+
+    function resetGame() {
+      board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      score = 0;
+      lines = 0;
+      level = 1;
+      dropCounter = 0;
+      dropInterval = 900;
+      lastTime = 0;
+      paused = false;
+      gameOver = false;
+      petals = [];
+
+      piece = createPiece();
+      nextPiece = createPiece();
+
+      hideMessage();
+      updateStats();
+
+      cancelAnimationFrame(animationId);
+      update();
+    }
+
+    function createPiece() {
+      const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+      const style = FLOWER_STYLES[Math.floor(Math.random() * FLOWER_STYLES.length)];
+      return {
+        shape: shape.map(row => row.slice()),
+        x: Math.floor(COLS / 2) - Math.ceil(shape[0].length / 2),
+        y: 0,
+        style
+      };
+    }
+
+    function roundedRect(context, x, y, w, h, r) {
+      context.beginPath();
+      context.moveTo(x + r, y);
+      context.lineTo(x + w - r, y);
+      context.quadraticCurveTo(x + w, y, x + w, y + r);
+      context.lineTo(x + w, y + h - r);
+      context.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      context.lineTo(x + r, y + h);
+      context.quadraticCurveTo(x, y + h, x, y + h - r);
+      context.lineTo(x, y + r);
+      context.quadraticCurveTo(x, y, x + r, y);
+      context.closePath();
+    }
+
+    function drawCell(context, x, y, style, size = CELL) {
+      const px = x * size;
+      const py = y * size;
+      const pad = Math.max(2, size * 0.08);
+
+      context.save();
+      context.shadowColor = "rgba(0,0,0,0.12)";
+      context.shadowBlur = 5;
+      context.shadowOffsetY = 2;
+
+      roundedRect(context, px + pad, py + pad, size - pad * 2, size - pad * 2, size * 0.22);
+      context.fillStyle = style.bg;
+      context.fill();
+
+      context.shadowColor = "transparent";
+      context.lineWidth = 2;
+      context.strokeStyle = style.shadow;
+      context.stroke();
+
+      context.font = `${Math.floor(size * 0.72)}px serif`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(style.emoji, px + size / 2, py + size / 2 + size * 0.03);
+      context.restore();
+    }
+
+    function drawBoard() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "rgba(214, 79, 136, 0.12)";
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= COLS; x++) {
+        ctx.beginPath();
+        ctx.moveTo(x * CELL, 0);
+        ctx.lineTo(x * CELL, ROWS * CELL);
+        ctx.stroke();
+      }
+
+      for (let y = 0; y <= ROWS; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, y * CELL);
+        ctx.lineTo(COLS * CELL, y * CELL);
+        ctx.stroke();
+      }
+
+      for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+          if (board[y][x]) drawCell(ctx, x, y, board[y][x]);
+        }
+      }
+
+      drawGhostPiece();
+      drawPiece();
+      drawPetals();
+      drawCelebration();
+      drawNext();
+    }
+
+    function drawPiece() {
+      piece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value) drawCell(ctx, piece.x + x, piece.y + y, piece.style);
+        });
+      });
+    }
+
+    function drawGhostPiece() {
+      const ghost = {
+        shape: piece.shape,
+        x: piece.x,
+        y: piece.y,
+        style: piece.style
+      };
+
+      while (!collide(ghost)) ghost.y++;
+      ghost.y--;
+
+      ctx.save();
+      ctx.globalAlpha = 0.22;
+      ghost.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value) drawCell(ctx, ghost.x + x, ghost.y + y, ghost.style);
+        });
+      });
+      ctx.restore();
+    }
+
+    function drawNext() {
+      nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+      const size = 26;
+      const shape = nextPiece.shape;
+      const offsetX = Math.floor((nextCanvas.width / size - shape[0].length) / 2);
+      const offsetY = Math.floor((nextCanvas.height / size - shape.length) / 2);
+
+      shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value) drawCell(nextCtx, offsetX + x, offsetY + y, nextPiece.style, size);
+        });
+      });
+    }
+
+    function collide(testPiece = piece) {
+      for (let y = 0; y < testPiece.shape.length; y++) {
+        for (let x = 0; x < testPiece.shape[y].length; x++) {
+          if (!testPiece.shape[y][x]) continue;
+
+          const newX = testPiece.x + x;
+          const newY = testPiece.y + y;
+
+          if (
+            newX < 0 ||
+            newX >= COLS ||
+            newY >= ROWS ||
+            (newY >= 0 && board[newY][newX])
+          ) return true;
+        }
+      }
+      return false;
+    }
+
+    function mergePiece() {
+      piece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value) {
+            const boardY = piece.y + y;
+            const boardX = piece.x + x;
+            if (boardY >= 0) board[boardY][boardX] = piece.style;
+          }
+        });
+      });
+    }
+
+    function clearLines() {
+      let clearedRows = [];
+
+      outer: for (let y = ROWS - 1; y >= 0; y--) {
+        for (let x = 0; x < COLS; x++) {
+          if (!board[y][x]) continue outer;
+        }
+
+        clearedRows.push(y);
+        board.splice(y, 1);
+        board.unshift(Array(COLS).fill(null));
+        y++;
+      }
+
+      if (clearedRows.length > 0) {
+        createPetalBurst(clearedRows);
+        lines += clearedRows.length;
+        checkCelebration();
+        score += [0, 100, 300, 500, 900][clearedRows.length] * level;
+        level = Math.floor(lines / 7) + 1;
+        dropInterval = Math.max(135, 900 - (level - 1) * 75);
+        updateStats();
+      }
+    }
+
+    function createPetalBurst(rows) {
+      rows.forEach(row => {
+        for (let i = 0; i < 18; i++) {
+          petals.push({
+            x: Math.random() * canvas.width,
+            y: row * CELL + CELL / 2,
+            vx: (Math.random() - 0.5) * 4,
+            vy: -Math.random() * 4 - 1,
+            life: 42,
+            emoji: ["🌸", "✨", "🌼", "💮"][Math.floor(Math.random() * 4)]
+          });
+        }
+      });
+    }
+
+    function drawPetals() {
+      petals.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.life / 42);
+        ctx.font = "18px serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(p.emoji, p.x, p.y);
+        ctx.restore();
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.12;
+        p.life--;
+      });
+
+      petals = petals.filter(p => p.life > 0);
+    }
+
+
+    function checkCelebration() {
+      if (lines === lastCelebrationMilestone) return;
+
+      if (lines > 0 && lines % 10 === 0) {
+        celebrationText = ["💖 That's my queen", "right there! 💖"];
+        celebrationTimer = 180;
+        lastCelebrationMilestone = lines;
+      } else if (lines > 0 && lines % 10 === 5) {
+        celebrationText = ["✨ You're doing", "great sweetie! ✨"];
+        celebrationTimer = 180;
+        lastCelebrationMilestone = lines;
+      }
+    }
+
+    function drawCelebration() {
+      if (celebrationTimer <= 0) return;
+
+      ctx.save();
+
+      const pulseProgress = Math.max(0, 1 - celebrationTimer / 180);
+      let scale = 1;
+
+      if (pulseProgress < 0.18) {
+        scale = 1 + Math.sin((pulseProgress / 0.18) * Math.PI) * 0.18;
+      }
+
+      ctx.globalAlpha = celebrationTimer < 25 ? celebrationTimer / 25 : 1;
+
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.scale(scale, scale);
+
+      ctx.font = "bold 34px Comic Sans MS";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 8;
+      ctx.fillStyle = "#ff4fa3";
+      ctx.shadowColor = "rgba(255, 79, 163, 0.45)";
+      ctx.shadowBlur = 12;
+
+      const lineHeight = 42;
+      const startY = -lineHeight / 2;
+
+      celebrationText.forEach((line, index) => {
+        const y = startY + index * lineHeight;
+        ctx.strokeText(line, 0, y);
+        ctx.fillText(line, 0, y);
+      });
+
+      celebrationTimer--;
+      ctx.restore();
+    }
+
+
+    function movePiece(dir) {
+      piece.x += dir;
+      if (collide()) piece.x -= dir;
+    }
+
+    function dropPiece() {
+      piece.y++;
+
+      if (collide()) {
+        piece.y--;
+        mergePiece();
+        clearLines();
+
+        piece = nextPiece;
+        piece.x = Math.floor(COLS / 2) - Math.ceil(piece.shape[0].length / 2);
+        piece.y = 0;
+        nextPiece = createPiece();
+
+        if (collide()) endGame();
+      }
+
+      dropCounter = 0;
+    }
+
+    function hardDrop() {
+      while (!collide()) {
+        piece.y++;
+        score += 2;
+      }
+      piece.y--;
+      dropPiece();
+      updateStats();
+    }
+
+    function rotatePiece() {
+      const oldShape = piece.shape;
+      const rotated = oldShape[0].map((_, i) => oldShape.map(row => row[i]).reverse());
+      piece.shape = rotated;
+
+      let offset = 1;
+      while (collide()) {
+        piece.x += offset;
+        offset = -(offset + (offset > 0 ? 1 : -1));
+
+        if (Math.abs(offset) > piece.shape[0].length + 1) {
+          piece.shape = oldShape;
+          return;
+        }
+      }
+    }
+
+    function update(time = 0) {
+      if (gameOver) {
+        drawBoard();
+        return;
+      }
+
+      const deltaTime = time - lastTime;
+      lastTime = time;
+
+      if (!paused) {
+        dropCounter += deltaTime;
+        if (dropCounter > dropInterval) dropPiece();
+      }
+
+      drawBoard();
+      animationId = requestAnimationFrame(update);
+    }
+
+    function updateStats() {
+      scoreEl.textContent = score;
+      linesEl.textContent = lines;
+      levelEl.textContent = level;
+    }
+
+    function showMessage(text) {
+      msgEl.textContent = text;
+      msgEl.style.display = "block";
+    }
+
+    function hideMessage() {
+      msgEl.textContent = "";
+      msgEl.style.display = "none";
+    }
+
+    function endGame() {
+      gameOver = true;
+      showMessage("Game over! Your garden is full. Press Start / Restart to play again.");
+    }
+
+    
+    // ===== ROYALTY-FREE FUN BACKGROUND MUSIC =====
+    let audioCtx = null;
+    let musicOn = false;
+    let musicTimer = null;
+    let musicStep = 0;
+
+    const melody = [
+      523.25, 659.25, 783.99, 659.25,
+      587.33, 698.46, 880.00, 698.46,
+      659.25, 783.99, 987.77, 783.99,
+      698.46, 880.00, 1046.50, 880.00
+    ];
+
+    const bass = [
+      130.81, 130.81, 146.83, 146.83,
+      164.81, 164.81, 174.61, 174.61
+    ];
+
+    function playTone(freq, duration, type, volume, when = 0) {
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime + when;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + duration + 0.03);
+    }
+
+    function musicTick() {
+      if (!musicOn || !audioCtx) return;
+
+      playTone(melody[musicStep % melody.length], 0.22, "triangle", 0.035);
+
+      if (musicStep % 2 === 0) {
+        playTone(bass[Math.floor(musicStep / 2) % bass.length], 0.28, "sine", 0.025);
+      }
+
+      if (musicStep % 4 === 0) {
+        playTone(1046.50, 0.07, "square", 0.012, 0.12);
+      }
+
+      musicStep++;
+    }
+
+    async function toggleMusic() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioCtx.state === "suspended") {
+        await audioCtx.resume();
+      }
+
+      musicOn = !musicOn;
+
+      if (musicOn) {
+        musicBtn.textContent = "Stop Music 🔇";
+        musicTick();
+        musicTimer = setInterval(musicTick, 260);
+      } else {
+        musicBtn.textContent = "Play Music 🎵";
+        clearInterval(musicTimer);
+        musicTimer = null;
+      }
+    }
+
+
+    document.addEventListener("keydown", e => {
+      if (gameOver && e.key !== "Enter") return;
+
+      if (e.key === "p" || e.key === "P") {
+        paused = !paused;
+        paused ? showMessage("Paused") : hideMessage();
+        return;
+      }
+
+      if (paused) return;
+
+      if (e.key === "ArrowLeft") movePiece(-1);
+      else if (e.key === "ArrowRight") movePiece(1);
+      else if (e.key === "ArrowDown") {
+        dropPiece();
+        score += 1;
+        updateStats();
+      }
+      else if (e.key === "ArrowUp") rotatePiece();
+      else if (e.code === "Space") {
+        e.preventDefault();
+        hardDrop();
+      }
+    });
+
+    startBtn.addEventListener("click", resetGame);
+    musicBtn.addEventListener("click", toggleMusic);
+
+    
+    const bg = document.getElementById("gangnamBg");
+
+    const icons = ["🕺","🐴","✨","🌸","💖"];
+
+    for (let i = 0; i < 25; i++) {
+      const d = document.createElement("div");
+      d.className = "dancer";
+      d.textContent = icons[Math.floor(Math.random() * icons.length)];
+      d.style.left = Math.random() * 100 + "%";
+      d.style.animationDuration = (10 + Math.random() * 12) + "s";
+      d.style.animationDelay = (-Math.random() * 15) + "s";
+      bg.appendChild(d);
+    }
+
+
+    resetGame();
+  </script>
+</body>
+</html>
+
